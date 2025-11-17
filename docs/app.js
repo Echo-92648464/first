@@ -1,7 +1,9 @@
 // 汽修商品出入库系统前端JavaScript
 class AutoPartsInventorySystem {
     constructor() {
-        this.apiBase = '';
+        // 优先使用页面中配置的 window.API_BASE（部署时在 index.html 设置），
+        // 若未设置则使用空字符串，表示使用相对路径（同域后端或本地）
+        this.apiBase = (typeof window !== 'undefined' && window.API_BASE !== undefined) ? window.API_BASE : '';
         this.currentTab = 'dashboard';
         this.categories = [];
         this.suppliers = [];
