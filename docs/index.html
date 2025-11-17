@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>汽修商品出入库管理系统</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航 -->
+        <header class="header">
+            <h1><i class="fas fa-car"></i> 汽修商品出入库管理系统</h1>
+            <div class="user-info">
+                <span id="current-user">管理员</span>
+                <button class="btn btn-logout" onclick="logout()">退出</button>
+            </div>
+        </header>
+
+        <!-- 侧边栏菜单 -->
+        <nav class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item active" data-tab="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> 仪表盘
+                </li>
+                <li class="nav-item" data-tab="products">
+                    <i class="fas fa-boxes"></i> 商品管理
+                </li>
+                <li class="nav-item" data-tab="stock-in">
+                    <i class="fas fa-arrow-down"></i> 入库管理
+                </li>
+                <li class="nav-item" data-tab="stock-out">
+                    <i class="fas fa-arrow-up"></i> 出库管理
+                </li>
+                <li class="nav-item" data-tab="inventory">
+                    <i class="fas fa-warehouse"></i> 库存查询
+                </li>
+                <li class="nav-item" data-tab="reports">
+                    <i class="fas fa-chart-bar"></i> 统计报表
+                </li>
+            </ul>
+        </nav>
+
+        <!-- 主内容区域 -->
+        <main class="main-content">
+            <!-- 仪表盘 -->
+            <div id="dashboardTab" class="tab-content active">
+                <h2>系统概览</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>商品总数</h3>
+                        <div class="stat-value" id="totalProducts">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>总入库量</h3>
+                        <div class="stat-value" id="totalStockIn">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>总出库量</h3>
+                        <div class="stat-value" id="totalStockOut">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>库存总价值</h3>
+                        <div class="stat-value" id="totalValue">¥0.00</div>
+                    </div>
+                </div>
+                
+                <div class="alerts-section">
+                    <h3>库存预警 <span class="alert-count" id="alertsCount">0</span></h3>
+                    <div id="alertsList" class="alerts-list">
+                        <!-- 预警列表将在这里动态生成 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 商品管理 -->
+            <div id="productsTab" class="tab-content">
+                <div class="tab-header">
+                    <h2>商品管理</h2>
+                    <div class="tab-actions">
+                        <input type="text" id="productSearch" placeholder="搜索商品..." class="search-input">
+                        <button class="btn btn-primary" onclick="showModal('addProductModal')">添加商品</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="productsTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>商品名称</th>
+                                <th>分类</th>
+                                <th>零件号</th>
+                                <th>品牌</th>
+                                <th>型号</th>
+                                <th>单位</th>
+                                <th>进货价</th>
+                                <th>销售价</th>
+                                <th>当前库存</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 商品数据将在这里动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 入库管理 -->
+            <div id="stockInTab" class="tab-content">
+                <div class="tab-header">
+                    <h2>入库管理</h2>
+                    <div class="tab-actions">
+                        <button class="btn btn-primary" onclick="showModal('stockInModal')">添加入库</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="stockInTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>商品名称</th>
+                                <th>供应商</th>
+                                <th>数量</th>
+                                <th>单价</th>
+                                <th>总金额</th>
+                                <th>批次号</th>
+                                <th>操作员</th>
+                                <th>入库时间</th>
+                                <th>备注</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 入库数据将在这里动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 出库管理 -->
+            <div id="stockOutTab" class="tab-content">
+                <div class="tab-header">
+                    <h2>出库管理</h2>
+                    <div class="tab-actions">
+                        <button class="btn btn-primary" onclick="showModal('stockOutModal')">添加出库</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="stockOutTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>商品名称</th>
+                                <th>数量</th>
+                                <th>单价</th>
+                                <th>总金额</th>
+                                <th>客户名称</th>
+                                <th>操作员</th>
+                                <th>出库时间</th>
+                                <th>备注</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 出库数据将在这里动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 库存查询 -->
+            <div id="inventoryTab" class="tab-content">
+                <div class="tab-header">
+                    <h2>库存查询</h2>
+                    <div class="tab-actions">
+                        <input type="text" id="inventorySearch" placeholder="搜索库存..." class="search-input">
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="inventoryTable" class="data-table">
+                        <thead>
+                            <tr>
+                                <th>商品名称</th>
+                                <th>零件号</th>
+                                <th>品牌</th>
+                                <th>型号</th>
+                                <th>当前库存</th>
+                                <th>最低库存</th>
+                                <th>最高库存</th>
+                                <th>库存状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 库存数据将在这里动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 统计报表 -->
+            <div id="reportsTab" class="tab-content">
+                <div class="section-header">
+                    <h2>统计报表</h2>
+                </div>
+
+                <div class="report-filters">
+                    <input type="date" id="start-date">
+                    <input type="date" id="end-date">
+                    <button class="btn btn-primary" onclick="generateReport()">生成报表</button>
+                </div>
+
+                <div class="report-charts">
+                    <div class="chart-container">
+                        <canvas id="sales-chart" width="400" height="200"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="inventory-chart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 模态框 -->
+    <!-- 添加商品模态框 -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideModal('addProductModal')">&times;</span>
+            <h3>添加商品</h3>
+            <form id="addProductForm">
+                <div class="form-group">
+                    <label>商品名称:</label>
+                    <input type="text" id="productName" required>
+                </div>
+                <div class="form-group">
+                    <label>分类:</label>
+                    <input type="text" id="productCategory" required>
+                </div>
+                <div class="form-group">
+                    <label>零件号:</label>
+                    <input type="text" id="productPartNumber" required>
+                </div>
+                <div class="form-group">
+                    <label>品牌:</label>
+                    <input type="text" id="productBrand" required>
+                </div>
+                <div class="form-group">
+                    <label>型号:</label>
+                    <input type="text" id="productModel" required>
+                </div>
+                <div class="form-group">
+                    <label>单位:</label>
+                    <input type="text" id="productUnit" required>
+                </div>
+                <div class="form-group">
+                    <label>进货价:</label>
+                    <input type="number" id="productCostPrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>销售价:</label>
+                    <input type="number" id="productSalePrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>最低库存:</label>
+                    <input type="number" id="productMinStock" required>
+                </div>
+                <div class="form-group">
+                    <label>最高库存:</label>
+                    <input type="number" id="productMaxStock" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">添加</button>
+                    <button type="button" class="btn btn-secondary" onclick="hideModal('addProductModal')">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 编辑商品模态框 -->
+    <div id="editProductModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideModal('editProductModal')">&times;</span>
+            <h3>编辑商品</h3>
+            <form id="editProductForm">
+                <div class="form-group">
+                    <label>商品名称:</label>
+                    <input type="text" name="name" id="editProductName" required>
+                </div>
+                <div class="form-group">
+                    <label>分类:</label>
+                    <input type="text" name="category_id" id="editProductCategory" required>
+                </div>
+                <div class="form-group">
+                    <label>零件号:</label>
+                    <input type="text" name="part_number" id="editProductPartNumber" required>
+                </div>
+                <div class="form-group">
+                    <label>品牌:</label>
+                    <input type="text" name="brand" id="editProductBrand" required>
+                </div>
+                <div class="form-group">
+                    <label>型号:</label>
+                    <input type="text" name="model" id="editProductModel" required>
+                </div>
+                <div class="form-group">
+                    <label>单位:</label>
+                    <input type="text" name="unit" id="editProductUnit" required>
+                </div>
+                <div class="form-group">
+                    <label>进货价:</label>
+                    <input type="number" name="purchase_price" id="editProductCostPrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>销售价:</label>
+                    <input type="number" name="sale_price" id="editProductSalePrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>最低库存:</label>
+                    <input type="number" name="min_stock" id="editProductMinStock" required>
+                </div>
+                <div class="form-group">
+                    <label>最高库存:</label>
+                    <input type="number" name="max_stock" id="editProductMaxStock" required>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">保存</button>
+                    <button type="button" class="btn btn-secondary" onclick="hideModal('editProductModal')">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 入库模态框 -->
+    <div id="stockInModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideModal('stockInModal')">&times;</span>
+            <h3>商品入库</h3>
+            <form id="stockInForm">
+                <div class="form-group">
+                    <label>商品名称:</label>
+                    <input type="text" id="stockInProductName" required>
+                </div>
+                <div class="form-group">
+                    <label>数量:</label>
+                    <input type="number" id="stockInQuantity" required>
+                </div>
+                <div class="form-group">
+                    <label>单价:</label>
+                    <input type="number" id="stockInPrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>批次号:</label>
+                    <input type="text" id="stockInBatchNumber" required>
+                </div>
+                <div class="form-group">
+                    <label>操作员:</label>
+                    <input type="text" id="stockInOperator" required>
+                </div>
+                <div class="form-group">
+                    <label>备注:</label>
+                    <textarea id="stockInRemark"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">入库</button>
+                    <button type="button" class="btn btn-secondary" onclick="hideModal('stockInModal')">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 出库模态框 -->
+    <div id="stockOutModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="hideModal('stockOutModal')">&times;</span>
+            <h3>商品出库</h3>
+            <form id="stockOutForm">
+                <div class="form-group">
+                    <label>商品名称:</label>
+                    <input type="text" id="stockOutProductName" required>
+                </div>
+                <div class="form-group">
+                    <label>客户名称:</label>
+                    <input type="text" id="stockOutCustomer" required>
+                </div>
+                <div class="form-group">
+                    <label>数量:</label>
+                    <input type="number" id="stockOutQuantity" required>
+                </div>
+                <div class="form-group">
+                    <label>单价:</label>
+                    <input type="number" id="stockOutPrice" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label>操作员:</label>
+                    <input type="text" id="stockOutOperator" required>
+                </div>
+                <div class="form-group">
+                    <label>备注:</label>
+                    <textarea id="stockOutRemark"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">出库</button>
+                    <button type="button" class="btn btn-secondary" onclick="hideModal('stockOutModal')">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
