@@ -1,0 +1,46 @@
+# 依赖目录
+node_modules/
+.pnp/
+.pnp.js
+
+# 环境变量文件
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 日志文件
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# 编辑器目录和文件
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# 生产构建目录
+build/
+dist/
+
+# 测试覆盖�?
+coverage/
+.nyc_output/
+
+# 临时文件
+*.tmp
+*.temp
+.cache/
+
+# 操作系统文件
+Thumbs.db
+Desktop.ini

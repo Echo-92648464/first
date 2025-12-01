@@ -122,13 +122,23 @@ async function initializeDatabase() {
             ('上海汽配有限公司', '张经理', '13800138000'),
             ('北京汽车配件厂', '李主任', '13900139000')`);
 
-        // 插入示例商品数据
-        await connection.execute(`INSERT IGNORE INTO products (name, category_id, part_number, brand, model, unit, purchase_price, sale_price, min_stock, max_stock) VALUES 
+        // 插入示例商品数据 - 使用更安全的方式避免重复键错误
+        await connection.execute(`INSERT INTO products (name, category_id, part_number, brand, model, unit, purchase_price, sale_price, min_stock, max_stock) VALUES 
             ('机油滤清器', 4, 'FILTER-001', '博世', 'BOSCH-001', '个', 25.00, 35.00, 10, 50),
             ('空气滤清器', 4, 'FILTER-002', '曼牌', 'MANN-001', '个', 35.00, 50.00, 5, 30),
             ('刹车片', 2, 'BRAKE-001', '菲罗多', 'FERODO-001', '套', 120.00, 180.00, 5, 20),
             ('火花塞', 1, 'SPARK-001', 'NGK', 'NGK-001', '个', 45.00, 65.00, 10, 40),
-            ('汽车电瓶', 3, 'BATTERY-001', '瓦尔塔', 'VARTA-001', '个', 350.00, 480.00, 2, 10)`);
+            ('汽车电瓶', 3, 'BATTERY-001', '瓦尔塔', 'VARTA-001', '个', 350.00, 480.00, 2, 10)
+            ON DUPLICATE KEY UPDATE 
+            name = VALUES(name), 
+            category_id = VALUES(category_id),
+            brand = VALUES(brand),
+            model = VALUES(model),
+            unit = VALUES(unit),
+            purchase_price = VALUES(purchase_price),
+            sale_price = VALUES(sale_price),
+            min_stock = VALUES(min_stock),
+            max_stock = VALUES(max_stock)`);
 
         // 插入示例入库记录
         await connection.execute(`INSERT IGNORE INTO stock_in (product_id, supplier_id, quantity, unit_price, total_amount, batch_number, operator, notes) VALUES 
